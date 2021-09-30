@@ -26,6 +26,9 @@ dependencies {
 	// RSocket
 	implementation("org.springframework.boot:spring-boot-starter-rsocket")
 
+	// Webflux
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
+
 	// Data
 	implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
 	implementation("io.r2dbc:r2dbc-postgresql")
