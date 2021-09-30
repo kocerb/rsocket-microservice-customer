@@ -1,5 +1,6 @@
 package com.vomoxada.rsocketmicroservicecustomer.domain.dto.response
 
+import com.vomoxada.rsocketmicroservicecustomer.client.lookup.dto.response.ProfessionResponse
 import com.vomoxada.rsocketmicroservicecustomer.domain.enums.Gender
 import com.vomoxada.rsocketmicroservicecustomer.domain.enums.Segment
 import com.vomoxada.rsocketmicroservicecustomer.domain.enums.Status
@@ -14,7 +15,7 @@ data class CustomerResponse(
     var lastName: String?,
     var birthdate: LocalDate?,
     var gender: Gender?,
-    var professionId: UUID?,
+    var profession: ProfessionResponse?,
     var segment: Segment,
     var status: Status,
     var version: Int?,

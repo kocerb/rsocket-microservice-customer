@@ -3,6 +3,7 @@ package com.vomoxada.rsocketmicroservicecustomer.controller
 import com.vomoxada.rsocketmicroservicecustomer.domain.dto.request.CustomerCreateRequest
 import com.vomoxada.rsocketmicroservicecustomer.domain.dto.request.CustomerUpdateRequest
 import com.vomoxada.rsocketmicroservicecustomer.domain.dto.response.CustomerResponse
+import com.vomoxada.rsocketmicroservicecustomer.service.CustomerRestService
 import com.vomoxada.rsocketmicroservicecustomer.service.CustomerService
 import kotlinx.coroutines.flow.toList
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -19,17 +20,18 @@ import java.util.UUID
 @RestController
 @RequestMapping("/customers")
 class CustomerRestController(
-    private val customerService: CustomerService
+    private val customerService: CustomerService,
+    private val customerRestService: CustomerRestService
 ) {
 
     @GetMapping
     suspend fun getCustomers(): List<CustomerResponse> {
-        return customerService.getAll().toList()
+        return customerRestService.getAll().toList()
     }
 
     @GetMapping("/{id}")
     suspend fun getCustomerById(@PathVariable id: UUID): CustomerResponse {
-        return customerService.getById(id)
+        return customerRestService.getById(id)
     }
 
     @PostMapping

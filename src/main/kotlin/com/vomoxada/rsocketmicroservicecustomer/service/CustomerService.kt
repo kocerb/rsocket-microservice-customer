@@ -1,5 +1,6 @@
 package com.vomoxada.rsocketmicroservicecustomer.service
 
+import com.vomoxada.rsocketmicroservicecustomer.client.lookup.LookupClient
 import com.vomoxada.rsocketmicroservicecustomer.domain.dto.request.CustomerCreateRequest
 import com.vomoxada.rsocketmicroservicecustomer.domain.dto.request.CustomerUpdateRequest
 import com.vomoxada.rsocketmicroservicecustomer.domain.dto.response.CustomerResponse
@@ -14,17 +15,18 @@ import java.util.UUID
 @Service
 class CustomerService(
     private val customerRepository: CustomerRepository,
-    private val customerToCustomerResponseMapper: CustomerToCustomerResponseMapper
+    private val customerToCustomerResponseMapper: CustomerToCustomerResponseMapper,
+    private val lookupClient: LookupClient
 ) {
 
     suspend fun getById(id: UUID): CustomerResponse? {
-        return customerRepository.findById(id)?.let { customerToCustomerResponseMapper.convert(it)!! }
+        return customerRepository.findById(id)?.mapToCustomerResponse()
     }
 
     fun getAll(): Flow<CustomerResponse> {
         return customerRepository
             .findAll()
-            .map { customerToCustomerResponseMapper.convert(it)!! }
+            .map { it.mapToCustomerResponse() }
     }
 
     suspend fun create(customerCreateRequest: CustomerCreateRequest): CustomerResponse {
@@ -39,7 +41,7 @@ class CustomerService(
             )
         }
 
-        return customerRepository.save(customer).let { customerToCustomerResponseMapper.convert(it)!! }
+        return customerRepository.save(customer).mapToCustomerResponse()
     }
 
     suspend fun update(id: UUID, customerUpdateRequest: CustomerUpdateRequest, version: Int): CustomerResponse {
@@ -56,10 +58,17 @@ class CustomerService(
             )
         }
 
-        return customerRepository.save(updatedCustomer).let { customerToCustomerResponseMapper.convert(it)!! }
+        return customerRepository.save(updatedCustomer).mapToCustomerResponse()
     }
 
     suspend fun delete(id: UUID) {
         customerRepository.deleteById(id)
+    }
+
+    private suspend fun Customer.mapToCustomerResponse(): CustomerResponse {
+        val customerResponse = customerToCustomerResponseMapper.convert(this)!!
+        val professionResponse = this.professionId?.let { professionId -> lookupClient.professionsGetById(professionId) }
+        customerResponse.profession = professionResponse ?: throw Exception("Profession is not found with given ID: ${this.professionId}")
+        return customerResponse
     }
 }
