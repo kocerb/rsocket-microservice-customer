@@ -16,6 +16,3 @@ database:
 lookup-api:
   base-url: localhost
   port: 7002
-
-lookup-rest-api:
-  base-url: http://localhost:8082
