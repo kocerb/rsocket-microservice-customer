@@ -23,7 +23,7 @@ class CustomerController(
     }
 
     @MessageMapping("customers.getById.{id}")
-    suspend fun getCustomerById(@DestinationVariable id: UUID): CustomerResponse {
+    suspend fun getCustomerById(@DestinationVariable id: UUID): CustomerResponse? {
         return customerService.getById(id)
     }
 

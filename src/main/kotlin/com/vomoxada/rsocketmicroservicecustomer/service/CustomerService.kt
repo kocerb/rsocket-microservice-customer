@@ -17,8 +17,8 @@ class CustomerService(
     private val customerToCustomerResponseMapper: CustomerToCustomerResponseMapper
 ) {
 
-    suspend fun getById(id: UUID): CustomerResponse {
-        return findById(id).let { customerToCustomerResponseMapper.convert(it)!! }
+    suspend fun getById(id: UUID): CustomerResponse? {
+        return customerRepository.findById(id)?.let { customerToCustomerResponseMapper.convert(it)!! }
     }
 
     fun getAll(): Flow<CustomerResponse> {
@@ -39,11 +39,11 @@ class CustomerService(
             )
         }
 
-        return save(customer).let { customerToCustomerResponseMapper.convert(it)!! }
+        return customerRepository.save(customer).let { customerToCustomerResponseMapper.convert(it)!! }
     }
 
     suspend fun update(id: UUID, customerUpdateRequest: CustomerUpdateRequest, version: Int): CustomerResponse {
-        val customer = findById(id)
+        val customer = customerRepository.findById(id) ?: throw Exception("Customer is not found with given ID: $id")
         if (customer.version != version) throw Exception("Resource has been changed by another request.")
 
         val updatedCustomer = with(customerUpdateRequest) {
@@ -56,18 +56,10 @@ class CustomerService(
             )
         }
 
-        return save(updatedCustomer).let { customerToCustomerResponseMapper.convert(it)!! }
+        return customerRepository.save(updatedCustomer).let { customerToCustomerResponseMapper.convert(it)!! }
     }
 
     suspend fun delete(id: UUID) {
         customerRepository.deleteById(id)
-    }
-
-    private suspend fun findById(id: UUID): Customer {
-        return customerRepository.findById(id) ?: throw Exception("Customer is not found with given ID: $id")
-    }
-
-    private suspend fun save(customer: Customer): Customer {
-        return customerRepository.save(customer)
     }
 }
