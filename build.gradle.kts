@@ -32,6 +32,9 @@ dependencies {
 	implementation("org.postgresql:postgresql")
 	implementation("org.flywaydb:flyway-core")
 
+	// CSV
+	implementation("org.apache.commons:commons-csv:1.9.0")
+
 	// MapStruct
 	implementation("org.mapstruct:mapstruct:1.4.2.Final")
 	kapt("org.mapstruct:mapstruct-processor:1.4.2.Final")
